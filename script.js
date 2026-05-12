@@ -43,30 +43,57 @@ let animId = null;
 let scale = 1;
 let originX = 60, originY = 0;
 
-// ============ PARAM SYNC ============
+// ============ PARAM SYNC + UNIT CONVERSION ============
+const unitSelects = {
+    velocity: document.getElementById('velocity-unit'),
+    height: document.getElementById('height-unit')
+};
+
+// Conversion: displayed value → base (m/s or m)
+const unitToBase = {
+    ms: 1, kmh: 1 / 3.6,       // velocity
+    m: 1, cm: 0.01, mm: 0.001, km: 1000  // height
+};
+// Conversion: base → displayed value
+const baseToUnit = {
+    ms: 1, kmh: 3.6,
+    m: 1, cm: 100, mm: 1000, km: 0.001
+};
+
+function getVelUnit() { return unitSelects.velocity.value; }
+function getHUnit() { return unitSelects.height.value; }
+
 function updateParams() {
     params.v0 = +sliders.velocity.value;
     params.angle = +sliders.angle.value;
     params.h0 = +sliders.height.value;
     params.g = +sliders.gravity.value;
-    inputs.velocity.value = params.v0;
+    // Show converted values in inputs
+    inputs.velocity.value = +(params.v0 * baseToUnit[getVelUnit()]).toFixed(2);
     inputs.angle.value = params.angle;
-    inputs.height.value = params.h0;
+    inputs.height.value = +(params.h0 * baseToUnit[getHUnit()]).toFixed(2);
     inputs.gravity.value = params.g;
 }
 function syncFromInputs() {
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
-    sliders.velocity.value = inputs.velocity.value = clamp(+inputs.velocity.value, 5, 100);
+    // Convert input values to base units for sliders
+    const velBase = (+inputs.velocity.value) * unitToBase[getVelUnit()];
+    const hBase = (+inputs.height.value) * unitToBase[getHUnit()];
+    sliders.velocity.value = clamp(velBase, 5, 100);
     sliders.angle.value = inputs.angle.value = clamp(+inputs.angle.value, 1, 89);
-    sliders.height.value = inputs.height.value = clamp(+inputs.height.value, 0, 50);
+    sliders.height.value = clamp(hBase, 0, 50);
     sliders.gravity.value = inputs.gravity.value = clamp(+inputs.gravity.value, 1, 25);
     params.v0 = +sliders.velocity.value;
     params.angle = +sliders.angle.value;
     params.h0 = +sliders.height.value;
     params.g = +sliders.gravity.value;
 }
+// When unit dropdown changes, re-display the value in new unit
+function onUnitChange() { updateParams(); }
+
 Object.values(sliders).forEach(s => s.addEventListener('input', updateParams));
-Object.values(inputs).forEach(inp => { inp.addEventListener('input', syncFromInputs); });
+Object.values(inputs).forEach(inp => inp.addEventListener('input', syncFromInputs));
+Object.values(unitSelects).forEach(sel => sel.addEventListener('change', onUnitChange));
 
 // Planet presets
 document.querySelectorAll('.preset-btn').forEach(btn => {
@@ -169,12 +196,20 @@ function drawGrid() {
     ctx.fillStyle = '#94a3b8';
     ctx.font = 'bold 12px Inter';
     ctx.textAlign = 'center';
-    ctx.fillText('Horizontal Distance (metres) →', (originX + cW) / 2, groundY + 30);
+    ctx.fillText('Horizontal Distance (metres) →', (originX + cW) / 2, groundY + 36);
     ctx.save();
     ctx.translate(16, cH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('↑ Height (metres)', 0, 0);
     ctx.restore();
+    // X axis label at end
+    ctx.fillStyle = '#818cf8';
+    ctx.font = 'bold 13px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText('X', cW - 18, groundY - 6);
+    // Y axis label at top
+    ctx.textAlign = 'center';
+    ctx.fillText('Y', originX + 1, 16);
 }
 
 function niceNum(range) {

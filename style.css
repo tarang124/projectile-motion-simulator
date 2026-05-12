@@ -125,6 +125,15 @@ main { position: relative; z-index: 1; }
 .param-input::-webkit-inner-spin-button,
 .param-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .input-unit { font-size: 0.65rem; color: var(--text-muted); font-family: var(--mono); white-space: nowrap; }
+.unit-select {
+    background: transparent; border: none; outline: none;
+    color: var(--accent-1); font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+    cursor: pointer; padding: 0 2px; -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23818cf8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right center;
+    padding-right: 12px;
+}
+.unit-select option { background: #1e293b; color: #e2e8f0; font-family: var(--mono); }
 .range-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
 
 /* Range Slider */
