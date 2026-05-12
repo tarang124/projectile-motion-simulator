@@ -264,6 +264,27 @@ canvas#simulation-canvas { width: 100%; height: 500px; display: block; backgroun
 .insight-item h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
 .insight-item p { font-size: 0.78rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
 
+/* Theory Tables */
+.theory-table { width: 100%; }
+.theory-table td { font-family: var(--font); font-size: 0.82rem; }
+.theory-table td strong { color: var(--accent-1); font-family: var(--mono); }
+
+/* Worked Example Steps */
+.worked-steps { display: flex; flex-direction: column; gap: 14px; margin-top: 1rem; }
+.work-step {
+    border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+    overflow: hidden; background: rgba(0,0,0,0.15);
+}
+.work-step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: rgba(99, 102, 241, 0.06);
+    border-bottom: 1px solid var(--glass-border); font-size: 0.88rem;
+}
+.work-step-body { padding: 10px 14px; }
+.work-step-body .equation-item { margin-bottom: 6px; }
+.work-step-body .equation { font-size: 0.82rem; }
+.work-step-body .equation strong { color: var(--accent-3); }
+
 /* ============ ANALYSIS SECTION ============ */
 .analysis-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
 .analysis-card { padding: 1.5rem; }

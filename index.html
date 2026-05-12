@@ -399,6 +399,208 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Variables Reference -->
+                    <div class="theory-card glass-card" id="theory-variables">
+                        <div class="theory-card-header">
+                            <span class="theory-number">05</span>
+                            <h3>Variables Reference Table</h3>
+                        </div>
+                        <p>These are all the symbols used in projectile motion. Know these before solving any problem:</p>
+                        <div class="table-wrapper">
+                            <table class="theory-table">
+                                <thead>
+                                    <tr><th>Symbol</th><th>Meaning</th><th>Unit</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>v₀</strong></td><td>Initial velocity (launch speed)</td><td>m/s</td></tr>
+                                    <tr><td><strong>θ</strong></td><td>Launch angle from the ground</td><td>degrees (°)</td></tr>
+                                    <tr><td><strong>h₀</strong></td><td>Initial height above ground</td><td>metres (m)</td></tr>
+                                    <tr><td><strong>g</strong></td><td>Acceleration due to gravity</td><td>9.8 m/s²</td></tr>
+                                    <tr><td><strong>t</strong></td><td>Time elapsed since launch</td><td>seconds (s)</td></tr>
+                                    <tr><td><strong>x</strong></td><td>Horizontal distance at time t</td><td>metres (m)</td></tr>
+                                    <tr><td><strong>y</strong></td><td>Vertical height at time t</td><td>metres (m)</td></tr>
+                                    <tr><td><strong>vₓ</strong></td><td>Horizontal velocity (constant)</td><td>m/s</td></tr>
+                                    <tr><td><strong>vᵧ</strong></td><td>Vertical velocity at time t</td><td>m/s</td></tr>
+                                    <tr><td><strong>R</strong></td><td>Range (total horizontal distance)</td><td>metres (m)</td></tr>
+                                    <tr><td><strong>H</strong></td><td>Maximum height reached</td><td>metres (m)</td></tr>
+                                    <tr><td><strong>T</strong></td><td>Total time of flight</td><td>seconds (s)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Worked Example -->
+                    <div class="theory-card glass-card" id="theory-worked-example">
+                        <div class="theory-card-header">
+                            <span class="theory-number">06</span>
+                            <h3>✏️ Complete Worked Example</h3>
+                        </div>
+                        <p><strong>Problem:</strong> A ball is launched at <strong>50 m/s</strong> at an angle of <strong>30°</strong> from the ground (h₀ = 0). Find all key values.</p>
+
+                        <div class="worked-steps">
+                            <div class="work-step">
+                                <div class="work-step-header">
+                                    <span class="step-num">1</span>
+                                    <strong>Break velocity into components</strong>
+                                </div>
+                                <div class="work-step-body">
+                                    <div class="equation-item">
+                                        <div class="equation">vₓ = v₀ × cos(θ) = 50 × cos(30°) = 50 × 0.866 = <strong>43.30 m/s</strong></div>
+                                    </div>
+                                    <div class="equation-item">
+                                        <div class="equation">vᵧ₀ = v₀ × sin(θ) = 50 × sin(30°) = 50 × 0.500 = <strong>25.00 m/s</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="work-step">
+                                <div class="work-step-header">
+                                    <span class="step-num">2</span>
+                                    <strong>Find Maximum Height (H)</strong>
+                                </div>
+                                <div class="work-step-body">
+                                    <div class="equation-item highlight">
+                                        <div class="equation-label">Formula</div>
+                                        <div class="equation">H = (v₀ × sin(θ))² / (2 × g)</div>
+                                    </div>
+                                    <div class="equation-item">
+                                        <div class="equation">H = (25.00)² / (2 × 9.8) = 625 / 19.6 = <strong>31.89 m</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="work-step">
+                                <div class="work-step-header">
+                                    <span class="step-num">3</span>
+                                    <strong>Find Time to Maximum Height</strong>
+                                </div>
+                                <div class="work-step-body">
+                                    <div class="equation-item highlight">
+                                        <div class="equation-label">Formula</div>
+                                        <div class="equation">t_apex = v₀ × sin(θ) / g</div>
+                                    </div>
+                                    <div class="equation-item">
+                                        <div class="equation">t_apex = 25.00 / 9.8 = <strong>2.55 seconds</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="work-step">
+                                <div class="work-step-header">
+                                    <span class="step-num">4</span>
+                                    <strong>Find Total Time of Flight (T)</strong>
+                                </div>
+                                <div class="work-step-body">
+                                    <div class="equation-item highlight">
+                                        <div class="equation-label">Formula (when h₀ = 0)</div>
+                                        <div class="equation">T = 2 × v₀ × sin(θ) / g</div>
+                                    </div>
+                                    <div class="equation-item">
+                                        <div class="equation">T = 2 × 25.00 / 9.8 = 50 / 9.8 = <strong>5.10 seconds</strong></div>
+                                    </div>
+                                    <p style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">💡 Notice: T = 2 × t_apex (time going up = time coming down)</p>
+                                </div>
+                            </div>
+
+                            <div class="work-step">
+                                <div class="work-step-header">
+                                    <span class="step-num">5</span>
+                                    <strong>Find Range (R)</strong>
+                                </div>
+                                <div class="work-step-body">
+                                    <div class="equation-item highlight">
+                                        <div class="equation-label">Formula (when h₀ = 0)</div>
+                                        <div class="equation">R = v₀² × sin(2θ) / g</div>
+                                    </div>
+                                    <div class="equation-item">
+                                        <div class="equation">R = 50² × sin(60°) / 9.8 = 2500 × 0.866 / 9.8 = <strong>220.92 m</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="work-step">
+                                <div class="work-step-header">
+                                    <span class="step-num">6</span>
+                                    <strong>Find Impact Speed</strong>
+                                </div>
+                                <div class="work-step-body">
+                                    <div class="equation-item">
+                                        <div class="equation">When h₀ = 0: Impact Speed = Launch Speed = <strong>50.00 m/s</strong></div>
+                                    </div>
+                                    <p style="font-size:0.8rem; color:#94a3b8; margin-top:6px;">💡 Energy is conserved — it lands at the same speed it was launched!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Answer Summary -->
+                        <div style="margin-top:1.2rem; padding:14px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:10px;">
+                            <h4 style="font-size:0.9rem; color:#818cf8; margin-bottom:8px;">📋 Final Answer Summary</h4>
+                            <div class="table-wrapper">
+                                <table class="theory-table">
+                                    <thead><tr><th>Quantity</th><th>Value</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>Horizontal velocity (vₓ)</td><td><strong>43.30 m/s</strong></td></tr>
+                                        <tr><td>Vertical velocity (vᵧ₀)</td><td><strong>25.00 m/s</strong></td></tr>
+                                        <tr><td>Maximum height (H)</td><td><strong>31.89 m</strong></td></tr>
+                                        <tr><td>Time to apex</td><td><strong>2.55 s</strong></td></tr>
+                                        <tr><td>Total flight time (T)</td><td><strong>5.10 s</strong></td></tr>
+                                        <tr><td>Range (R)</td><td><strong>220.92 m</strong></td></tr>
+                                        <tr><td>Impact speed</td><td><strong>50.00 m/s</strong></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Reference & Planet Gravity -->
+                    <div class="theory-card glass-card" id="theory-quick-ref">
+                        <div class="theory-card-header">
+                            <span class="theory-number">07</span>
+                            <h3>⚡ Quick Reference & Planet Gravity</h3>
+                        </div>
+                        <p><strong>Important facts</strong> your teacher may ask about:</p>
+                        <ul class="theory-list">
+                            <li>
+                                <span class="list-icon">🎯</span>
+                                <div><strong>45° = Maximum Range</strong> — On flat ground, sin(2×45°) = sin(90°) = 1 (the maximum value).</div>
+                            </li>
+                            <li>
+                                <span class="list-icon">🔄</span>
+                                <div><strong>Complementary angles give same range</strong> — 30° and 60° give equal range but different heights.</div>
+                            </li>
+                            <li>
+                                <span class="list-icon">⏱️</span>
+                                <div><strong>Time up = Time down</strong> — When h₀ = 0, the trajectory is perfectly symmetric.</div>
+                            </li>
+                            <li>
+                                <span class="list-icon">➡️</span>
+                                <div><strong>Horizontal velocity never changes</strong> — No air resistance means vₓ stays constant throughout.</div>
+                            </li>
+                            <li>
+                                <span class="list-icon">⬆️</span>
+                                <div><strong>Vertical velocity = 0 at apex</strong> — The ball momentarily stops going up before falling.</div>
+                            </li>
+                            <li>
+                                <span class="list-icon">💥</span>
+                                <div><strong>Impact speed = Launch speed</strong> — When h₀ = 0, energy conservation means it lands at the same speed.</div>
+                            </li>
+                        </ul>
+
+                        <h4 style="margin-top:1.2rem; font-size:0.95rem; margin-bottom:8px;">🌍 Gravity on Different Planets</h4>
+                        <div class="table-wrapper">
+                            <table class="theory-table">
+                                <thead><tr><th>Planet</th><th>g (m/s²)</th><th>Effect on Motion</th></tr></thead>
+                                <tbody>
+                                    <tr><td>🌍 Earth</td><td><strong>9.8</strong></td><td>Standard — our default</td></tr>
+                                    <tr><td>🌙 Moon</td><td><strong>1.62</strong></td><td>~6× less gravity → goes much higher & farther</td></tr>
+                                    <tr><td>🔴 Mars</td><td><strong>3.72</strong></td><td>~2.6× less → higher & farther than Earth</td></tr>
+                                    <tr><td>🟠 Jupiter</td><td><strong>24.79</strong></td><td>~2.5× more → shorter range & lower height</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="font-size:0.8rem; color:#94a3b8; margin-top:8px;">📐 <strong>Calculator Tip:</strong> Make sure your calculator is in <strong>DEGREE mode</strong>, not radian! cos(45°) should give 0.707.</p>
+                    </div>
                 </div>
             </div>
         </section>
