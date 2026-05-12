@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projectile Motion Simulator | Physics Project</title>
+    <meta name="description" content="Interactive Projectile Motion Simulator - Explore the physics of projectile motion with real-time trajectory visualization, equations, and analysis.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header id="main-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <circle cx="20" cy="20" r="18" stroke="url(#logoGrad)" stroke-width="2.5" stroke-dasharray="4 3"/>
+                        <path d="M8 32 Q20 5 35 28" stroke="url(#logoGrad)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <circle cx="35" cy="28" r="3" fill="#60a5fa"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#818cf8"/>
+                                <stop offset="100%" stop-color="#60a5fa"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Projectile Motion</h1>
+                    <p class="subtitle">Interactive Physics Simulator</p>
+                </div>
+            </div>
+            <nav id="main-nav">
+                <a href="#simulator" class="nav-link active" data-section="simulator">Simulator</a>
+                <a href="#theory" class="nav-link" data-section="theory">Theory</a>
+                <a href="#analysis" class="nav-link" data-section="analysis">Analysis</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- ======================== SIMULATOR SECTION ======================== -->
+        <section id="simulator" class="section active">
+            <div class="simulator-layout">
+                <!-- Left Panel: Controls -->
+                <aside class="controls-panel glass-card" id="controls-panel">
+                    <h2 class="panel-title">
+                        <span class="panel-icon">⚙️</span> Launch Parameters
+                    </h2>
+
+                    <div class="control-group">
+                        <label for="velocity-slider">
+                            Initial Velocity (v₀)
+                            <span class="value-badge" id="velocity-value">40 m/s</span>
+                        </label>
+                        <input type="range" id="velocity-slider" min="5" max="100" value="40" step="1">
+                        <div class="range-labels"><span>5</span><span>100 m/s</span></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="angle-slider">
+                            Launch Angle (θ)
+                            <span class="value-badge" id="angle-value">45°</span>
+                        </label>
+                        <input type="range" id="angle-slider" min="1" max="89" value="45" step="1">
+                        <div class="range-labels"><span>1°</span><span>89°</span></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="height-slider">
+                            Initial Height (h₀)
+                            <span class="value-badge" id="height-value">0 m</span>
+                        </label>
+                        <input type="range" id="height-slider" min="0" max="50" value="0" step="1">
+                        <div class="range-labels"><span>0</span><span>50 m</span></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="gravity-slider">
+                            Gravity (g)
+                            <span class="value-badge" id="gravity-value">9.8 m/s²</span>
+                        </label>
+                        <input type="range" id="gravity-slider" min="1" max="25" value="9.8" step="0.1">
+                        <div class="range-labels"><span>1</span><span>25 m/s²</span></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Planet Presets</label>
+                        <div class="preset-grid">
+                            <button class="preset-btn" data-gravity="9.8" id="preset-earth">🌍 Earth</button>
+                            <button class="preset-btn" data-gravity="1.62" id="preset-moon">🌙 Moon</button>
+                            <button class="preset-btn" data-gravity="3.72" id="preset-mars">🔴 Mars</button>
+                            <button class="preset-btn" data-gravity="24.79" id="preset-jupiter">🟠 Jupiter</button>
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <button class="btn btn-primary" id="launch-btn">
+                            <span class="btn-icon">🚀</span> Launch
+                        </button>
+                        <button class="btn btn-secondary" id="reset-btn">
+                            <span class="btn-icon">🔄</span> Reset
+                        </button>
+                    </div>
+                    <div class="button-row">
+                        <button class="btn btn-ghost" id="compare-btn">
+                            <span class="btn-icon">📊</span> Add to Compare
+                        </button>
+                        <button class="btn btn-ghost" id="clear-compare-btn">
+                            <span class="btn-icon">🗑️</span> Clear All
+                        </button>
+                    </div>
+                </aside>
+
+                <!-- Center: Canvas -->
+                <div class="canvas-container glass-card" id="canvas-container">
+                    <div class="canvas-header">
+                        <h3>Trajectory Visualization</h3>
+                        <div class="canvas-controls">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="show-grid" checked>
+                                <span class="toggle-switch"></span>
+                                Grid
+                            </label>
+                            <label class="toggle-label">
+                                <input type="checkbox" id="show-vectors" checked>
+                                <span class="toggle-switch"></span>
+                                Vectors
+                            </label>
+                            <label class="toggle-label">
+                                <input type="checkbox" id="show-trace" checked>
+                                <span class="toggle-switch"></span>
+                                Trace
+                            </label>
+                        </div>
+                    </div>
+                    <canvas id="simulation-canvas"></canvas>
+                    <div class="canvas-overlay" id="canvas-overlay">
+                        <div class="overlay-text">Adjust parameters and click <strong>Launch</strong> to begin</div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Stats -->
+                <aside class="stats-panel glass-card" id="stats-panel">
+                    <h2 class="panel-title">
+                        <span class="panel-icon">📐</span> Live Data
+                    </h2>
+
+                    <div class="stats-grid">
+                        <div class="stat-card" id="stat-time">
+                            <div class="stat-label">Time</div>
+                            <div class="stat-value">0.00 <span class="stat-unit">s</span></div>
+                        </div>
+                        <div class="stat-card" id="stat-x">
+                            <div class="stat-label">Horizontal (x)</div>
+                            <div class="stat-value">0.00 <span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card" id="stat-y">
+                            <div class="stat-label">Vertical (y)</div>
+                            <div class="stat-value">0.00 <span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card" id="stat-vx">
+                            <div class="stat-label">Velocity (Vx)</div>
+                            <div class="stat-value">0.00 <span class="stat-unit">m/s</span></div>
+                        </div>
+                        <div class="stat-card" id="stat-vy">
+                            <div class="stat-label">Velocity (Vy)</div>
+                            <div class="stat-value">0.00 <span class="stat-unit">m/s</span></div>
+                        </div>
+                        <div class="stat-card" id="stat-speed">
+                            <div class="stat-label">Speed (|v|)</div>
+                            <div class="stat-value">0.00 <span class="stat-unit">m/s</span></div>
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+
+                    <h2 class="panel-title">
+                        <span class="panel-icon">🏆</span> Summary
+                    </h2>
+
+                    <div class="stats-grid">
+                        <div class="stat-card accent" id="stat-range">
+                            <div class="stat-label">Range (R)</div>
+                            <div class="stat-value">— <span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card accent" id="stat-max-height">
+                            <div class="stat-label">Max Height (H)</div>
+                            <div class="stat-value">— <span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card accent" id="stat-total-time">
+                            <div class="stat-label">Total Time (T)</div>
+                            <div class="stat-value">— <span class="stat-unit">s</span></div>
+                        </div>
+                        <div class="stat-card accent" id="stat-impact-speed">
+                            <div class="stat-label">Impact Speed</div>
+                            <div class="stat-value">— <span class="stat-unit">m/s</span></div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- ======================== THEORY SECTION ======================== -->
+        <section id="theory" class="section">
+            <div class="theory-container">
+                <div class="section-header">
+                    <h2>📚 Theory of Projectile Motion</h2>
+                    <p>Understanding the physics behind the simulation</p>
+                </div>
+
+                <div class="theory-grid">
+                    <!-- What is Projectile Motion -->
+                    <div class="theory-card glass-card" id="theory-intro">
+                        <div class="theory-card-header">
+                            <span class="theory-number">01</span>
+                            <h3>What is Projectile Motion?</h3>
+                        </div>
+                        <p>
+                            Projectile motion is the motion of an object thrown or projected into the air, 
+                            subject only to the acceleration of gravity. The object is called a <strong>projectile</strong>, 
+                            and its path is called its <strong>trajectory</strong>.
+                        </p>
+                        <p>
+                            The key insight is that the horizontal and vertical components of motion are 
+                            <strong>independent</strong> of each other. Horizontal motion has constant velocity, 
+                            while vertical motion is uniformly accelerated due to gravity.
+                        </p>
+                        <div class="theory-diagram">
+                            <svg viewBox="0 0 500 250" class="diagram-svg">
+                                <defs>
+                                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#818cf8"/>
+                                    </marker>
+                                    <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/>
+                                    </marker>
+                                    <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#f87171"/>
+                                    </marker>
+                                </defs>
+                                <!-- Ground -->
+                                <line x1="30" y1="220" x2="480" y2="220" stroke="#334155" stroke-width="2"/>
+                                <!-- Trajectory -->
+                                <path d="M 50 220 Q 250 20 450 220" stroke="#818cf8" stroke-width="2.5" fill="none" stroke-dasharray="6 4"/>
+                                <!-- Velocity vectors at various points -->
+                                <circle cx="50" cy="220" r="5" fill="#60a5fa"/>
+                                <line x1="50" y1="220" x2="100" y2="175" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowhead)"/>
+                                <text x="75" y="168" fill="#60a5fa" font-size="12" font-family="Inter">v₀</text>
+                                
+                                <circle cx="150" cy="110" r="4" fill="#60a5fa"/>
+                                <line x1="150" y1="110" x2="200" y2="110" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+                                <line x1="150" y1="110" x2="150" y2="75" stroke="#f87171" stroke-width="1.5" marker-end="url(#arrowhead-red)"/>
+                                
+                                <circle cx="250" cy="50" r="4" fill="#60a5fa"/>
+                                <line x1="250" y1="50" x2="300" y2="50" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+                                <text x="260" y="42" fill="#34d399" font-size="11" font-family="Inter">vₓ (constant)</text>
+                                
+                                <circle cx="350" cy="110" r="4" fill="#60a5fa"/>
+                                <line x1="350" y1="110" x2="400" y2="110" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+                                <line x1="350" y1="110" x2="350" y2="145" stroke="#f87171" stroke-width="1.5" marker-end="url(#arrowhead-red)"/>
+                                
+                                <circle cx="450" cy="220" r="5" fill="#60a5fa"/>
+                                <!-- Labels -->
+                                <text x="230" y="245" fill="#94a3b8" font-size="12" font-family="Inter">Range (R)</text>
+                                <text x="475" y="50" fill="#f87171" font-size="11" font-family="Inter">vy</text>
+                                <text x="10" y="130" fill="#818cf8" font-size="11" font-family="Inter" transform="rotate(-90, 15, 130)">Height</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Key Equations -->
+                    <div class="theory-card glass-card" id="theory-equations">
+                        <div class="theory-card-header">
+                            <span class="theory-number">02</span>
+                            <h3>Key Equations</h3>
+                        </div>
+                        <div class="equations-list">
+                            <div class="equation-item">
+                                <div class="equation-label">Horizontal Position</div>
+                                <div class="equation">x(t) = v₀ · cos(θ) · t</div>
+                            </div>
+                            <div class="equation-item">
+                                <div class="equation-label">Vertical Position</div>
+                                <div class="equation">y(t) = h₀ + v₀ · sin(θ) · t − ½ · g · t²</div>
+                            </div>
+                            <div class="equation-item">
+                                <div class="equation-label">Horizontal Velocity</div>
+                                <div class="equation">vₓ = v₀ · cos(θ) = constant</div>
+                            </div>
+                            <div class="equation-item">
+                                <div class="equation-label">Vertical Velocity</div>
+                                <div class="equation">vᵧ(t) = v₀ · sin(θ) − g · t</div>
+                            </div>
+                            <div class="equation-item highlight">
+                                <div class="equation-label">Maximum Height</div>
+                                <div class="equation">H = h₀ + (v₀ · sin(θ))² / (2g)</div>
+                            </div>
+                            <div class="equation-item highlight">
+                                <div class="equation-label">Range (h₀ = 0)</div>
+                                <div class="equation">R = v₀² · sin(2θ) / g</div>
+                            </div>
+                            <div class="equation-item highlight">
+                                <div class="equation-label">Time of Flight (h₀ = 0)</div>
+                                <div class="equation">T = 2 · v₀ · sin(θ) / g</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assumptions -->
+                    <div class="theory-card glass-card" id="theory-assumptions">
+                        <div class="theory-card-header">
+                            <span class="theory-number">03</span>
+                            <h3>Assumptions & Conditions</h3>
+                        </div>
+                        <ul class="theory-list">
+                            <li>
+                                <span class="list-icon">✦</span>
+                                <div>
+                                    <strong>No Air Resistance</strong> — The only force acting on the projectile is gravity.
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-icon">✦</span>
+                                <div>
+                                    <strong>Uniform Gravity</strong> — Gravitational acceleration (g) is constant throughout the motion.
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-icon">✦</span>
+                                <div>
+                                    <strong>Flat Earth Approximation</strong> — The ground is assumed to be flat (no curvature effects).
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-icon">✦</span>
+                                <div>
+                                    <strong>Point Mass</strong> — The projectile is treated as a point mass (no rotation or spin).
+                                </div>
+                            </li>
+                            <li>
+                                <span class="list-icon">✦</span>
+                                <div>
+                                    <strong>Two-Dimensional Motion</strong> — Motion is confined to a vertical plane.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Special Cases -->
+                    <div class="theory-card glass-card" id="theory-special">
+                        <div class="theory-card-header">
+                            <span class="theory-number">04</span>
+                            <h3>Special Cases & Insights</h3>
+                        </div>
+                        <div class="insight-grid">
+                            <div class="insight-item">
+                                <div class="insight-icon">🎯</div>
+                                <h4>Maximum Range</h4>
+                                <p>For level ground (h₀ = 0), maximum range is achieved at <strong>θ = 45°</strong>.</p>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">🔄</div>
+                                <h4>Complementary Angles</h4>
+                                <p>Angles <strong>θ</strong> and <strong>90° − θ</strong> give the <strong>same range</strong> on level ground.</p>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">⏱️</div>
+                                <h4>Symmetry of Time</h4>
+                                <p>Time ascending = Time descending (when launched and landing at same height).</p>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-icon">📐</div>
+                                <h4>Independence</h4>
+                                <p>Horizontal and vertical motions are <strong>completely independent</strong> of each other.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================== ANALYSIS SECTION ======================== -->
+        <section id="analysis" class="section">
+            <div class="analysis-container">
+                <div class="section-header">
+                    <h2>📊 Data Analysis</h2>
+                    <p>Compare trajectories and analyze results</p>
+                </div>
+
+                <div class="analysis-grid">
+                    <!-- Comparison Table -->
+                    <div class="glass-card analysis-card" id="comparison-card">
+                        <h3>🔬 Trajectory Comparison</h3>
+                        <p class="card-subtitle">Launch projectiles with different parameters and compare them side-by-side.</p>
+                        <div class="table-wrapper">
+                            <table id="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Color</th>
+                                        <th>v₀ (m/s)</th>
+                                        <th>θ (°)</th>
+                                        <th>h₀ (m)</th>
+                                        <th>g (m/s²)</th>
+                                        <th>Range (m)</th>
+                                        <th>Max H (m)</th>
+                                        <th>Time (s)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparison-body">
+                                    <tr class="empty-row">
+                                        <td colspan="9">No trajectories added yet. Use "Add to Compare" in the Simulator.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="glass-card analysis-card" id="chart-card">
+                        <h3>📈 Range vs Angle Analysis</h3>
+                        <p class="card-subtitle">How does the launch angle affect the range? (Using current velocity and gravity)</p>
+                        <canvas id="analysis-chart"></canvas>
+                        <button class="btn btn-primary" id="generate-chart-btn" style="margin-top:1rem;">
+                            <span class="btn-icon">📊</span> Generate Chart
+                        </button>
+                    </div>
+
+                    <!-- Height vs Time Chart -->
+                    <div class="glass-card analysis-card" id="height-chart-card">
+                        <h3>📉 Height vs Time</h3>
+                        <p class="card-subtitle">Vertical position over time for all compared trajectories</p>
+                        <canvas id="height-chart"></canvas>
+                        <button class="btn btn-primary" id="generate-height-chart-btn" style="margin-top:1rem;">
+                            <span class="btn-icon">📊</span> Generate Chart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="main-footer">
+        <div class="footer-content">
+            <p>🚀 Projectile Motion Simulator — Physics Project</p>
+            <p class="footer-sub">Built with HTML, CSS & JavaScript | No external libraries</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
