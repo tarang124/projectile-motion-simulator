@@ -794,3 +794,131 @@ Object.values(toggles).forEach(t => t.addEventListener('change', () => { if (!si
 // Init
 updateParams();
 setTimeout(drawStatic, 200);
+
+// ============ LIVE CALCULATOR ============
+const calcInputs = {
+    v0: document.getElementById('calc-v0'),
+    angle: document.getElementById('calc-angle'),
+    h0: document.getElementById('calc-h0'),
+    g: document.getElementById('calc-g')
+};
+
+function liveCalc() {
+    const v0 = +calcInputs.v0.value || 0;
+    const angle = +calcInputs.angle.value || 0;
+    const h0 = +calcInputs.h0.value || 0;
+    const g = +calcInputs.g.value || 9.8;
+    if (v0 <= 0 || g <= 0 || angle <= 0 || angle >= 90) return;
+
+    const rad = angle * Math.PI / 180;
+    const cosA = Math.cos(rad), sinA = Math.sin(rad);
+    const vx = v0 * cosA, vy0 = v0 * sinA;
+    const tApex = vy0 / g;
+    const maxH = h0 + (vy0 * vy0) / (2 * g);
+    const T = h0 === 0
+        ? (2 * vy0 / g)
+        : (vy0 + Math.sqrt(vy0 * vy0 + 2 * g * h0)) / g;
+    const R = vx * T;
+    const vyImpact = vy0 - g * T;
+    const impactSpeed = Math.sqrt(vx * vx + vyImpact * vyImpact);
+
+    // Update result cards
+    document.querySelector('#calc-r-range .calc-result-value').textContent = R.toFixed(2);
+    document.querySelector('#calc-r-height .calc-result-value').textContent = maxH.toFixed(2);
+    document.querySelector('#calc-r-time .calc-result-value').textContent = T.toFixed(2);
+    document.querySelector('#calc-r-impact .calc-result-value').textContent = impactSpeed.toFixed(2);
+
+    // Build step-by-step HTML
+    const f = (n) => n.toFixed(4);
+    const fr = (n) => n.toFixed(2);
+
+    const steps = `
+    <div class="calc-step">
+        <div class="calc-step-head"><span class="step-num">1</span> Break velocity into components</div>
+        <div class="calc-step-body">
+            <div class="calc-formula">vₓ = v₀ × cos(θ)</div>
+            <div class="calc-substitution">vₓ = ${v0} × cos(${angle}°) = ${v0} × ${f(cosA)} = <strong>${fr(vx)} m/s</strong></div>
+            <div class="calc-formula" style="margin-top:8px">vᵧ₀ = v₀ × sin(θ)</div>
+            <div class="calc-substitution">vᵧ₀ = ${v0} × sin(${angle}°) = ${v0} × ${f(sinA)} = <strong>${fr(vy0)} m/s</strong></div>
+        </div>
+    </div>
+
+    <div class="calc-step">
+        <div class="calc-step-head"><span class="step-num">2</span> Maximum Height (H)</div>
+        <div class="calc-step-body">
+            <div class="calc-formula">H = h₀ + (v₀ × sin(θ))² / (2 × g)</div>
+            <div class="calc-substitution">H = ${h0} + (${fr(vy0)})² / (2 × ${g}) = ${h0} + ${fr(vy0*vy0)} / ${fr(2*g)} = <strong>${fr(maxH)} m</strong></div>
+            <div class="calc-note">💡 At max height, vertical velocity = 0</div>
+        </div>
+    </div>
+
+    <div class="calc-step">
+        <div class="calc-step-head"><span class="step-num">3</span> Time to Apex</div>
+        <div class="calc-step-body">
+            <div class="calc-formula">t_apex = v₀ × sin(θ) / g</div>
+            <div class="calc-substitution">t_apex = ${fr(vy0)} / ${g} = <strong>${fr(tApex)} seconds</strong></div>
+        </div>
+    </div>
+
+    <div class="calc-step">
+        <div class="calc-step-head"><span class="step-num">4</span> Total Time of Flight (T)</div>
+        <div class="calc-step-body">
+            ${h0 === 0
+                ? `<div class="calc-formula">T = 2 × v₀ × sin(θ) / g</div>
+                   <div class="calc-substitution">T = 2 × ${fr(vy0)} / ${g} = ${fr(2*vy0)} / ${g} = <strong>${fr(T)} seconds</strong></div>
+                   <div class="calc-note">💡 T = 2 × t_apex (symmetric trajectory when h₀ = 0)</div>`
+                : `<div class="calc-formula">T = [v₀sin(θ) + √(v₀²sin²(θ) + 2gh₀)] / g</div>
+                   <div class="calc-substitution">T = [${fr(vy0)} + √(${fr(vy0*vy0)} + ${fr(2*g*h0)})] / ${g} = <strong>${fr(T)} seconds</strong></div>
+                   <div class="calc-note">💡 Uses quadratic formula because h₀ ≠ 0</div>`
+            }
+        </div>
+    </div>
+
+    <div class="calc-step">
+        <div class="calc-step-head"><span class="step-num">5</span> Range (R)</div>
+        <div class="calc-step-body">
+            <div class="calc-formula">R = vₓ × T</div>
+            <div class="calc-substitution">R = ${fr(vx)} × ${fr(T)} = <strong>${fr(R)} m</strong></div>
+            ${h0 === 0 ? `<div class="calc-note">💡 Shortcut: R = v₀² × sin(2θ) / g = ${v0}² × sin(${2*angle}°) / ${g} = ${fr(v0*v0*Math.sin(2*rad)/g)} m ✓</div>` : ''}
+        </div>
+    </div>
+
+    <div class="calc-step">
+        <div class="calc-step-head"><span class="step-num">6</span> Impact Speed</div>
+        <div class="calc-step-body">
+            <div class="calc-formula">vₓ_impact = vₓ = ${fr(vx)} m/s  (unchanged)</div>
+            <div class="calc-formula">vᵧ_impact = vᵧ₀ − g × T = ${fr(vy0)} − ${g} × ${fr(T)} = ${fr(vyImpact)} m/s</div>
+            <div class="calc-formula">Speed = √(vₓ² + vᵧ²)</div>
+            <div class="calc-substitution">Speed = √(${fr(vx)}² + ${fr(Math.abs(vyImpact))}²) = √(${fr(vx*vx)} + ${fr(vyImpact*vyImpact)}) = <strong>${fr(impactSpeed)} m/s</strong></div>
+            ${h0 === 0 ? `<div class="calc-note">💡 Impact speed = Launch speed (energy conservation when h₀ = 0)</div>` : `<div class="calc-note">💡 Impact speed > Launch speed because it fell from height h₀ = ${h0}m</div>`}
+        </div>
+    </div>
+
+    <div class="calc-step">
+        <div class="calc-step-head"><span class="step-num">7</span> Position at any time t</div>
+        <div class="calc-step-body">
+            <div class="calc-formula">x(t) = vₓ × t = ${fr(vx)} × t</div>
+            <div class="calc-formula">y(t) = ${h0} + ${fr(vy0)} × t − ½ × ${g} × t²</div>
+            <div class="calc-note">📌 Substitute any value of t (between 0 and ${fr(T)}) to get position</div>
+        </div>
+    </div>`;
+
+    document.getElementById('calc-steps-container').innerHTML = steps;
+}
+
+// Listen to all calculator inputs
+Object.values(calcInputs).forEach(inp => inp.addEventListener('input', liveCalc));
+
+// Calculator presets
+document.querySelectorAll('.calc-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+        calcInputs.v0.value = btn.dataset.v;
+        calcInputs.angle.value = btn.dataset.a;
+        calcInputs.h0.value = btn.dataset.h;
+        calcInputs.g.value = btn.dataset.g;
+        liveCalc();
+    });
+});
+
+// Run initial calculation
+liveCalc();
