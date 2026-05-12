@@ -21,11 +21,11 @@ const sliders = {
     height: document.getElementById('height-slider'),
     gravity: document.getElementById('gravity-slider')
 };
-const valueDisplays = {
-    velocity: document.getElementById('velocity-value'),
-    angle: document.getElementById('angle-value'),
-    height: document.getElementById('height-value'),
-    gravity: document.getElementById('gravity-value')
+const inputs = {
+    velocity: document.getElementById('velocity-input'),
+    angle: document.getElementById('angle-input'),
+    height: document.getElementById('height-input'),
+    gravity: document.getElementById('gravity-input')
 };
 const toggles = {
     grid: document.getElementById('show-grid'),
@@ -43,18 +43,30 @@ let animId = null;
 let scale = 1;
 let originX = 60, originY = 0;
 
-// ============ SLIDER UPDATES ============
+// ============ PARAM SYNC ============
 function updateParams() {
     params.v0 = +sliders.velocity.value;
     params.angle = +sliders.angle.value;
     params.h0 = +sliders.height.value;
     params.g = +sliders.gravity.value;
-    valueDisplays.velocity.textContent = params.v0 + ' m/s';
-    valueDisplays.angle.textContent = params.angle + '°';
-    valueDisplays.height.textContent = params.h0 + ' m';
-    valueDisplays.gravity.textContent = params.g + ' m/s²';
+    inputs.velocity.value = params.v0;
+    inputs.angle.value = params.angle;
+    inputs.height.value = params.h0;
+    inputs.gravity.value = params.g;
+}
+function syncFromInputs() {
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    sliders.velocity.value = inputs.velocity.value = clamp(+inputs.velocity.value, 5, 100);
+    sliders.angle.value = inputs.angle.value = clamp(+inputs.angle.value, 1, 89);
+    sliders.height.value = inputs.height.value = clamp(+inputs.height.value, 0, 50);
+    sliders.gravity.value = inputs.gravity.value = clamp(+inputs.gravity.value, 1, 25);
+    params.v0 = +sliders.velocity.value;
+    params.angle = +sliders.angle.value;
+    params.h0 = +sliders.height.value;
+    params.g = +sliders.gravity.value;
 }
 Object.values(sliders).forEach(s => s.addEventListener('input', updateParams));
+Object.values(inputs).forEach(inp => { inp.addEventListener('input', syncFromInputs); });
 
 // Planet presets
 document.querySelectorAll('.preset-btn').forEach(btn => {
@@ -238,12 +250,11 @@ function drawArrow(x1, y1, x2, y2, color, width) {
 function drawCompared() {
     comparedTrajectories.forEach((traj, i) => {
         drawTrail(traj.points, traj.color, 0.35);
-        // Label
         const lastPt = traj.points[traj.points.length - 1];
         const s = toScreen(lastPt.x, lastPt.y);
         ctx.fillStyle = traj.color;
         ctx.font = '10px Inter';
-        ctx.fillText(`#${i + 1}`, s.x - 6, s.y - 10);
+        ctx.fillText(`#${i + 1} (${traj.angle}°, ${traj.v0}m/s)`, s.x - 10, s.y - 10);
     });
 }
 
@@ -257,7 +268,181 @@ function drawAngleArc() {
     ctx.stroke();
     ctx.fillStyle = '#818cf8';
     ctx.font = '11px JetBrains Mono';
-    ctx.fillText(params.angle + '°', s.x + 34, s.y - 8);
+    ctx.fillText('θ=' + params.angle + '°', s.x + 34, s.y - 8);
+}
+
+// ============ DETAILED ANNOTATIONS ============
+function drawAnnotations(traj) {
+    const rad = params.angle * Math.PI / 180;
+    const vy0 = params.v0 * Math.sin(rad);
+    const vx0 = params.v0 * Math.cos(rad);
+    const timeToApex = vy0 / params.g;
+    const apexX = vx0 * timeToApex;
+    const apexY = traj.maxHeight;
+    const apexScreen = toScreen(apexX, apexY);
+    const groundAtApex = toScreen(apexX, 0);
+    const landScreen = toScreen(traj.range, 0);
+    const launchScreen = toScreen(0, params.h0);
+    const groundOrigin = toScreen(0, 0);
+
+    // --- Dashed line: apex to ground (max height dimension) ---
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(apexScreen.x, apexScreen.y);
+    ctx.lineTo(groundAtApex.x, groundAtApex.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Max height label
+    const midHY = (apexScreen.y + groundAtApex.y) / 2;
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 11px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText('H=' + apexY.toFixed(1) + 'm', apexScreen.x + 8, midHY);
+
+    // --- Apex marker ---
+    ctx.fillStyle = 'rgba(251, 191, 36, 0.25)';
+    ctx.beginPath(); ctx.arc(apexScreen.x, apexScreen.y, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath(); ctx.arc(apexScreen.x, apexScreen.y, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.font = 'bold 10px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('APEX', apexScreen.x, apexScreen.y - 14);
+
+    // --- Range dimension line along ground ---
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(52, 211, 153, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(groundOrigin.x, groundOrigin.y + 10);
+    ctx.lineTo(landScreen.x, landScreen.y + 10);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    // Range arrow tips
+    ctx.fillStyle = 'rgba(52, 211, 153, 0.7)';
+    ctx.beginPath(); ctx.moveTo(groundOrigin.x, groundOrigin.y + 6); ctx.lineTo(groundOrigin.x + 5, groundOrigin.y + 10); ctx.lineTo(groundOrigin.x, groundOrigin.y + 14); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(landScreen.x, landScreen.y + 6); ctx.lineTo(landScreen.x - 5, landScreen.y + 10); ctx.lineTo(landScreen.x, landScreen.y + 14); ctx.fill();
+    // Range label
+    ctx.fillStyle = '#34d399';
+    ctx.font = 'bold 11px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('R=' + traj.range.toFixed(1) + 'm', (groundOrigin.x + landScreen.x) / 2, groundOrigin.y + 26);
+
+    // --- Landing point marker ---
+    ctx.fillStyle = 'rgba(248, 113, 113, 0.25)';
+    ctx.beginPath(); ctx.arc(landScreen.x, landScreen.y, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f87171';
+    ctx.beginPath(); ctx.arc(landScreen.x, landScreen.y, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('LAND', landScreen.x, landScreen.y - 12);
+
+    // --- Launch point marker ---
+    ctx.fillStyle = 'rgba(96, 165, 250, 0.3)';
+    ctx.beginPath(); ctx.arc(launchScreen.x, launchScreen.y, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#60a5fa';
+    ctx.beginPath(); ctx.arc(launchScreen.x, launchScreen.y, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('LAUNCH', launchScreen.x, launchScreen.y - 12);
+
+    // --- Time markers along trajectory ---
+    ctx.textAlign = 'center';
+    const interval = traj.totalTime > 8 ? 2 : traj.totalTime > 4 ? 1 : 0.5;
+    for (let t = interval; t < traj.totalTime; t += interval) {
+        const mx = vx0 * t;
+        const my = params.h0 + vy0 * t - 0.5 * params.g * t * t;
+        if (my < 0) break;
+        const ms = toScreen(mx, my);
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
+        ctx.beginPath(); ctx.arc(ms.x, ms.y, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '9px JetBrains Mono';
+        ctx.fillText(t.toFixed(1) + 's', ms.x, ms.y - 8);
+    }
+
+    // --- Info box on canvas ---
+    drawInfoBox(traj);
+}
+
+function drawInfoBox(traj) {
+    const cW = canvas.width / (window.devicePixelRatio || 1);
+    const bx = cW - 190, by = 55, bw = 178, bh = 90;
+    ctx.fillStyle = 'rgba(10, 14, 26, 0.75)';
+    ctx.strokeStyle = 'rgba(99, 102, 241, 0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, 8);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#818cf8';
+    ctx.font = 'bold 10px Inter';
+    ctx.textAlign = 'left';
+    ctx.fillText('Parameters', bx + 10, by + 16);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px JetBrains Mono';
+    ctx.fillText(`v₀ = ${params.v0} m/s`, bx + 10, by + 32);
+    ctx.fillText(`θ  = ${params.angle}°`, bx + 10, by + 46);
+    ctx.fillText(`h₀ = ${params.h0} m`, bx + 10, by + 60);
+    ctx.fillText(`g  = ${params.g} m/s²`, bx + 10, by + 74);
+    ctx.fillStyle = '#64748b';
+    ctx.fillText(`T=${traj.totalTime.toFixed(2)}s`, bx + 100, by + 32);
+}
+
+function drawLiveTooltip(x, y, t) {
+    const s = toScreen(x, y);
+    const speed = Math.sqrt(sim.vx ** 2 + sim.vy ** 2);
+    const tx = s.x + 18, ty = s.y - 30;
+    ctx.fillStyle = 'rgba(10, 14, 26, 0.8)';
+    ctx.strokeStyle = 'rgba(96, 165, 250, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(tx, ty, 110, 42, 6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`t=${t.toFixed(2)}s  v=${speed.toFixed(1)}`, tx + 6, ty + 14);
+    ctx.fillText(`x=${x.toFixed(1)}  y=${y.toFixed(1)}`, tx + 6, ty + 28);
+}
+
+function drawVectorLabels(x, y, vx, vy) {
+    if (!toggles.vectors.checked) return;
+    const s = toScreen(x, y);
+    const vs = 1.5;
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#34d399';
+    ctx.fillText('Vx=' + vx.toFixed(1), s.x + vx * vs + 4, s.y - 2);
+    ctx.fillStyle = '#f87171';
+    ctx.fillText('Vy=' + vy.toFixed(1), s.x + 4, s.y - vy * vs - 4);
+    ctx.fillStyle = '#60a5fa';
+    const speed = Math.sqrt(vx*vx + vy*vy);
+    ctx.fillText('V=' + speed.toFixed(1), s.x + vx * vs + 4, s.y - vy * vs - 4);
+}
+
+function drawLegend() {
+    const cW = canvas.width / (window.devicePixelRatio || 1);
+    const lx = 75, ly = 55;
+    ctx.fillStyle = 'rgba(10, 14, 26, 0.65)';
+    ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(lx, ly, 130, 68, 6); ctx.fill(); ctx.stroke();
+    ctx.font = 'bold 9px Inter';
+    ctx.textAlign = 'left';
+    const items = [
+        ['#34d399', '● Vx (horizontal)'],
+        ['#f87171', '● Vy (vertical)'],
+        ['#60a5fa', '● V (resultant)'],
+        ['#fbbf24', '● Apex / Max Height'],
+    ];
+    items.forEach((it, i) => {
+        ctx.fillStyle = it[0];
+        ctx.fillText(it[1], lx + 8, ly + 14 + i * 14);
+    });
 }
 
 function drawStatic() {
@@ -265,7 +450,6 @@ function drawStatic() {
     const cH = canvas.height / (window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, cW, cH);
 
-    // Calculate scale from current params
     const traj = calcTrajectory(params.v0, params.angle, params.h0, params.g);
     let maxX = traj.range, maxY = traj.maxHeight;
     comparedTrajectories.forEach(ct => {
@@ -277,16 +461,13 @@ function drawStatic() {
     drawGrid();
     drawCompared();
 
-    // Draw predicted trajectory as dashed
     ctx.setLineDash([6, 4]);
-    drawTrail(traj.points, '#818cf8', 0.2);
+    drawTrail(traj.points, '#818cf8', 0.25);
     ctx.setLineDash([]);
 
-    // Draw launch point
-    const lp = toScreen(0, params.h0);
-    ctx.fillStyle = 'rgba(96, 165, 250, 0.3)';
-    ctx.beginPath(); ctx.arc(lp.x, lp.y, 5, 0, Math.PI * 2); ctx.fill();
+    drawAnnotations(traj);
     drawAngleArc();
+    drawLegend();
 }
 
 // ============ SIMULATION LOOP ============
@@ -305,7 +486,6 @@ function launch() {
     };
     trail = [{ x: sim.x, y: sim.y }];
 
-    // Pre-calc for scale
     const traj = calcTrajectory(params.v0, params.angle, params.h0, params.g);
     let maxX = traj.range, maxY = traj.maxHeight;
     comparedTrajectories.forEach(ct => {
@@ -314,9 +494,7 @@ function launch() {
     });
     scale = calcScale(maxX, maxY);
 
-    // Store summary for later
     sim.summary = traj;
-
     updateSummaryStats(traj);
     animId = requestAnimationFrame(animate);
 }
@@ -324,7 +502,6 @@ function launch() {
 function animate() {
     if (!sim.running) return;
 
-    // Physics step
     const stepsPerFrame = 3;
     for (let i = 0; i < stepsPerFrame; i++) {
         if (sim.landed) break;
@@ -332,28 +509,25 @@ function animate() {
         sim.x += sim.vx * sim.dt;
         sim.y += sim.vy * sim.dt;
         sim.time += sim.dt;
-
-        if (sim.y <= 0) {
-            sim.y = 0;
-            sim.landed = true;
-        }
+        if (sim.y <= 0) { sim.y = 0; sim.landed = true; }
         trail.push({ x: sim.x, y: sim.y });
     }
 
-    // Draw
     const cW = canvas.width / (window.devicePixelRatio || 1);
     const cH = canvas.height / (window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, cW, cH);
 
     drawGrid();
     drawCompared();
-
     if (toggles.trace.checked) drawTrail(trail, '#818cf8', 0.7);
+    drawAnnotations(sim.summary);
     drawProjectile(sim.x, sim.y);
     drawVectors(sim.x, sim.y, sim.vx, sim.vy);
+    drawVectorLabels(sim.x, sim.y, sim.vx, sim.vy);
     drawAngleArc();
+    drawLiveTooltip(sim.x, sim.y, sim.time);
+    drawLegend();
 
-    // Update live stats
     updateLiveStats();
 
     if (!sim.landed) {

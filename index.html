@@ -62,7 +62,10 @@
                     <div class="control-group">
                         <label for="velocity-slider">
                             Initial Velocity (v₀)
-                            <span class="value-badge" id="velocity-value">40 m/s</span>
+                            <div class="input-with-unit">
+                                <input type="number" id="velocity-input" class="param-input" min="5" max="100" value="40" step="1">
+                                <span class="input-unit">m/s</span>
+                            </div>
                         </label>
                         <input type="range" id="velocity-slider" min="5" max="100" value="40" step="1">
                         <div class="range-labels"><span>5</span><span>100 m/s</span></div>
@@ -71,7 +74,10 @@
                     <div class="control-group">
                         <label for="angle-slider">
                             Launch Angle (θ)
-                            <span class="value-badge" id="angle-value">45°</span>
+                            <div class="input-with-unit">
+                                <input type="number" id="angle-input" class="param-input" min="1" max="89" value="45" step="1">
+                                <span class="input-unit">°</span>
+                            </div>
                         </label>
                         <input type="range" id="angle-slider" min="1" max="89" value="45" step="1">
                         <div class="range-labels"><span>1°</span><span>89°</span></div>
@@ -80,7 +86,10 @@
                     <div class="control-group">
                         <label for="height-slider">
                             Initial Height (h₀)
-                            <span class="value-badge" id="height-value">0 m</span>
+                            <div class="input-with-unit">
+                                <input type="number" id="height-input" class="param-input" min="0" max="50" value="0" step="1">
+                                <span class="input-unit">m</span>
+                            </div>
                         </label>
                         <input type="range" id="height-slider" min="0" max="50" value="0" step="1">
                         <div class="range-labels"><span>0</span><span>50 m</span></div>
@@ -89,7 +98,10 @@
                     <div class="control-group">
                         <label for="gravity-slider">
                             Gravity (g)
-                            <span class="value-badge" id="gravity-value">9.8 m/s²</span>
+                            <div class="input-with-unit">
+                                <input type="number" id="gravity-input" class="param-input" min="1" max="25" value="9.8" step="0.1">
+                                <span class="input-unit">m/s²</span>
+                            </div>
                         </label>
                         <input type="range" id="gravity-slider" min="1" max="25" value="9.8" step="0.1">
                         <div class="range-labels"><span>1</span><span>25 m/s²</span></div>
