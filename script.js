@@ -145,14 +145,14 @@ function drawGrid() {
         const sx = originX + wx * scale;
         if (sx > cW) break;
         ctx.beginPath(); ctx.moveTo(sx, 20); ctx.lineTo(sx, groundY); ctx.stroke();
-        if (wx > 0) ctx.fillText(Math.round(wx) + '', sx - 8, groundY + 14);
+        if (wx > 0) ctx.fillText(Math.round(wx) + 'm', sx - 10, groundY + 14);
     }
     // Horizontal lines
     for (let wy = 0; wy <= maxWorldY; wy += niceStep) {
         const sy = groundY - wy * scale;
         if (sy < 20) break;
         ctx.beginPath(); ctx.moveTo(originX, sy); ctx.lineTo(cW, sy); ctx.stroke();
-        if (wy > 0) ctx.fillText(Math.round(wy) + '', originX - 30, sy + 4);
+        if (wy > 0) ctx.fillText(Math.round(wy) + 'm', originX - 32, sy + 4);
     }
 
     // Axes
@@ -166,13 +166,14 @@ function drawGrid() {
     ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(cW, groundY); ctx.stroke();
 
     // Axis labels
-    ctx.fillStyle = '#64748b';
-    ctx.font = '11px Inter';
-    ctx.fillText('x (m)', cW - 40, groundY + 14);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 12px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('Horizontal Distance (metres) →', (originX + cW) / 2, groundY + 30);
     ctx.save();
-    ctx.translate(12, cH / 2);
+    ctx.translate(16, cH / 2);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText('y (m)', 0, 0);
+    ctx.fillText('↑ Height (metres)', 0, 0);
     ctx.restore();
 }
 

@@ -408,60 +408,101 @@
             <div class="analysis-container">
                 <div class="section-header">
                     <h2>📊 Data Analysis</h2>
-                    <p>Compare trajectories and analyze results</p>
+                    <p>Compare different launches and see how changing parameters affects the result</p>
+                </div>
+
+                <!-- How to Use Guide -->
+                <div class="glass-card analysis-card" id="how-to-card" style="margin-bottom:1.2rem;">
+                    <h3>📝 How to Use Analysis</h3>
+                    <div class="how-to-steps">
+                        <div class="step-item">
+                            <span class="step-num">1</span>
+                            <div>
+                                <strong>Go to Simulator</strong> — Set your velocity, angle, height, and gravity using the sliders or input boxes.
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">2</span>
+                            <div>
+                                <strong>Click "Add to Compare"</strong> — This saves the current trajectory. The path will appear on the canvas in a unique color.
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">3</span>
+                            <div>
+                                <strong>Change parameters & repeat</strong> — Try a different angle or velocity, then click "Add to Compare" again. You can add multiple!
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num">4</span>
+                            <div>
+                                <strong>Come here to see results</strong> — The table below shows all your saved trajectories side-by-side. Use the charts to visualize patterns.
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="analysis-grid">
                     <!-- Comparison Table -->
                     <div class="glass-card analysis-card" id="comparison-card">
-                        <h3>🔬 Trajectory Comparison</h3>
-                        <p class="card-subtitle">Launch projectiles with different parameters and compare them side-by-side.</p>
+                        <h3>🔬 Trajectory Comparison Table</h3>
+                        <p class="card-subtitle">Each row is one saved trajectory. Compare how different settings produce different Range, Max Height, and Flight Time.</p>
                         <div class="table-wrapper">
                             <table id="comparison-table">
                                 <thead>
                                     <tr>
                                         <th>#</th>
                                         <th>Color</th>
-                                        <th>v₀ (m/s)</th>
-                                        <th>θ (°)</th>
-                                        <th>h₀ (m)</th>
-                                        <th>g (m/s²)</th>
+                                        <th>Velocity (m/s)</th>
+                                        <th>Angle (°)</th>
+                                        <th>Height (m)</th>
+                                        <th>Gravity (m/s²)</th>
                                         <th>Range (m)</th>
-                                        <th>Max H (m)</th>
-                                        <th>Time (s)</th>
+                                        <th>Max Height (m)</th>
+                                        <th>Flight Time (s)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="comparison-body">
                                     <tr class="empty-row">
-                                        <td colspan="9">No trajectories added yet. Use "Add to Compare" in the Simulator.</td>
+                                        <td colspan="9">No trajectories saved yet. Go to the <strong>Simulator</strong> tab and click <strong>"Add to Compare"</strong> to save trajectories.</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <!-- Charts -->
+                    <!-- Range vs Angle Chart -->
                     <div class="glass-card analysis-card" id="chart-card">
-                        <h3>📈 Range vs Angle Analysis</h3>
-                        <p class="card-subtitle">How does the launch angle affect the range? (Using current velocity and gravity)</p>
+                        <h3>📈 Range vs Angle Chart</h3>
+                        <p class="card-subtitle">
+                            <strong>What this shows:</strong> If you keep the same velocity and gravity, but change the launch angle from 1° to 89°, 
+                            how far does the projectile go? This chart answers that question. 
+                            <em>Notice: 45° gives the maximum range on flat ground!</em>
+                        </p>
                         <canvas id="analysis-chart"></canvas>
                         <button class="btn btn-primary" id="generate-chart-btn" style="margin-top:1rem;">
-                            <span class="btn-icon">📊</span> Generate Chart
+                            <span class="btn-icon">📊</span> Generate Range vs Angle Chart
                         </button>
                     </div>
 
                     <!-- Height vs Time Chart -->
                     <div class="glass-card analysis-card" id="height-chart-card">
-                        <h3>📉 Height vs Time</h3>
-                        <p class="card-subtitle">Vertical position over time for all compared trajectories</p>
+                        <h3>📉 Height vs Time Chart</h3>
+                        <p class="card-subtitle">
+                            <strong>What this shows:</strong> For each saved trajectory, this plots how the height changes over time. 
+                            Steeper angles reach higher but may have shorter range. Compare different trajectories to see the trade-offs.
+                            <em>You must save at least 2 trajectories using "Add to Compare" first.</em>
+                        </p>
                         <canvas id="height-chart"></canvas>
                         <button class="btn btn-primary" id="generate-height-chart-btn" style="margin-top:1rem;">
-                            <span class="btn-icon">📊</span> Generate Chart
+                            <span class="btn-icon">📊</span> Generate Height vs Time Chart
                         </button>
                     </div>
                 </div>
             </div>
         </section>
+
+
     </main>
 
     <!-- Footer -->
