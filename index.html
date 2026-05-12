@@ -624,7 +624,10 @@
                             <label>Initial Velocity (v₀)</label>
                             <div class="calc-input-row">
                                 <input type="number" id="calc-v0" class="calc-input" value="40" min="0" step="1">
-                                <span class="calc-unit">m/s</span>
+                                <select id="calc-v0-unit" class="unit-select">
+                                    <option value="ms" selected>m/s</option>
+                                    <option value="kmh">km/h</option>
+                                </select>
                             </div>
                         </div>
                         <div class="calc-field">
@@ -638,7 +641,12 @@
                             <label>Initial Height (h₀)</label>
                             <div class="calc-input-row">
                                 <input type="number" id="calc-h0" class="calc-input" value="0" min="0" step="1">
-                                <span class="calc-unit">m</span>
+                                <select id="calc-h0-unit" class="unit-select">
+                                    <option value="m" selected>m</option>
+                                    <option value="cm">cm</option>
+                                    <option value="mm">mm</option>
+                                    <option value="km">km</option>
+                                </select>
                             </div>
                         </div>
                         <div class="calc-field">

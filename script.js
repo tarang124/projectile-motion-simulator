@@ -802,12 +802,25 @@ const calcInputs = {
     h0: document.getElementById('calc-h0'),
     g: document.getElementById('calc-g')
 };
+const calcUnits = {
+    v0: document.getElementById('calc-v0-unit'),
+    h0: document.getElementById('calc-h0-unit')
+};
 
 function liveCalc() {
-    const v0 = +calcInputs.v0.value || 0;
+    const rawV0 = +calcInputs.v0.value || 0;
     const angle = +calcInputs.angle.value || 0;
-    const h0 = +calcInputs.h0.value || 0;
+    const rawH0 = +calcInputs.h0.value || 0;
     const g = +calcInputs.g.value || 9.8;
+
+    // Convert to base units (m/s and m)
+    const vUnit = calcUnits.v0.value;
+    const hUnit = calcUnits.h0.value;
+    const v0 = rawV0 * unitToBase[vUnit];
+    const h0 = rawH0 * unitToBase[hUnit];
+    const vUnitLabel = calcUnits.v0.options[calcUnits.v0.selectedIndex].text;
+    const hUnitLabel = calcUnits.h0.options[calcUnits.h0.selectedIndex].text;
+
     if (v0 <= 0 || g <= 0 || angle <= 0 || angle >= 90) return;
 
     const rad = angle * Math.PI / 180;
@@ -828,11 +841,16 @@ function liveCalc() {
     document.querySelector('#calc-r-time .calc-result-value').textContent = T.toFixed(2);
     document.querySelector('#calc-r-impact .calc-result-value').textContent = impactSpeed.toFixed(2);
 
+    // Show conversion note if not base units
+    const convNote = (vUnit !== 'ms' || hUnit !== 'm')
+        ? `<div class="calc-step"><div class="calc-step-head"><span class="step-num">⚙</span> Unit Conversion</div><div class="calc-step-body"><div class="calc-note">${vUnit !== 'ms' ? `v₀ = ${rawV0} ${vUnitLabel} = <strong style="color:#34d399">${v0.toFixed(2)} m/s</strong><br>` : ''}${hUnit !== 'm' ? `h₀ = ${rawH0} ${hUnitLabel} = <strong style="color:#34d399">${h0.toFixed(2)} m</strong>` : ''}</div></div></div>` : '';
+
     // Build step-by-step HTML
     const f = (n) => n.toFixed(4);
     const fr = (n) => n.toFixed(2);
 
     const steps = `
+    ${convNote}
     <div class="calc-step">
         <div class="calc-step-head"><span class="step-num">1</span> Break velocity into components</div>
         <div class="calc-step-body">
@@ -908,6 +926,7 @@ function liveCalc() {
 
 // Listen to all calculator inputs
 Object.values(calcInputs).forEach(inp => inp.addEventListener('input', liveCalc));
+Object.values(calcUnits).forEach(sel => sel.addEventListener('change', liveCalc));
 
 // Calculator presets
 document.querySelectorAll('.calc-preset').forEach(btn => {
@@ -916,6 +935,8 @@ document.querySelectorAll('.calc-preset').forEach(btn => {
         calcInputs.angle.value = btn.dataset.a;
         calcInputs.h0.value = btn.dataset.h;
         calcInputs.g.value = btn.dataset.g;
+        calcUnits.v0.value = 'ms';
+        calcUnits.h0.value = 'm';
         liveCalc();
     });
 });
